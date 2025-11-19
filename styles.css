@@ -1,0 +1,544 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    /* Allow children (charts, tooltips, legends) to overflow if needed
+       so nothing is clipped. Keep rounded corners visually via padding. */
+    overflow: visible;
+}
+
+.header {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.header p {
+    font-size: 1.2em;
+    opacity: 0.9;
+}
+
+.controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+    padding: 25px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.control-group label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.control-group input, .control-group select {
+    padding: 10px;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.control-group input:focus, .control-group select:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.control-row {
+    display: flex;
+    gap: 10px;
+}
+
+.control-row .control-group {
+    flex: 1;
+}
+
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
+    color: white;
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    color: white;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    color: white;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.main-area {
+    display: grid;
+    /* Single column: charts take full container width. */
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 20px 20px 20px;
+    align-items: start;
+}
+
+.visualization {
+    display: grid;
+    /* Apilar las dos visualizaciones una debajo de la otra para mejor lectura */
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0;
+    /* Let children determine height; charts have their own min-height */
+    height: auto;
+}
+
+/* Layout específico para la gráfica de resultado junto al panel de hospitales */
+.result-with-sidebar {
+    display: grid;
+    /* 80% for the chart area, 20% for the hospitals menu */
+    grid-template-columns: 4fr 1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+.result-with-sidebar .chart-area {
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-container {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-container h3 {
+    margin-bottom: 10px;
+    color: #2c3e50;
+    text-align: center;
+    font-size: 16px;
+}
+
+.chart-wrapper {
+    flex: 1;
+    position: relative;
+    /* Ensure canvas has a sensible minimum height so Chart.js can render
+       properly and charts don't collapse. */
+    min-height: 420px;
+}
+
+canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.chart-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.slider-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.slider-control label {
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 80px;
+}
+
+.slider-control input {
+    flex: 1;
+}
+
+.metrics {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin: 20px;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.metric-card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.metric-card.good { border-left-color: #27ae60; background: #d4edda; }
+.metric-card.warning { border-left-color: #f39c12; background: #fff3cd; }
+.metric-card.poor { border-left-color: #e74c3c; background: #f8d7da; }
+
+.metric-value {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.quality-assessment {
+    padding: 20px;
+    margin: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.assessment-card {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 15px;
+}
+
+.assessment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.score-badge {
+    background: #3498db;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.assessment-details {
+    margin-bottom: 15px;
+}
+
+.assessment-details ul {
+    list-style: none;
+    padding: 0;
+}
+
+.assessment-details li {
+    padding: 5px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.recommendation {
+    padding: 15px;
+    background: #e3f2fd;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.loading {
+    display: none;
+    text-align: center;
+    padding: 20px;
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+    margin: 0 auto 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.comparison-chart {
+    padding: 20px;
+    margin: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    /* Don't force a fixed height that may be clipped; use inner wrapper */
+    height: auto;
+}
+
+.comparison-chart .chart-wrapper {
+    min-height: 480px;
+}
+
+/* Specific canvases: give more vertical space for detailed plots */
+#mapaResultado {
+    min-height: 520px !important;
+    height: 520px !important;
+}
+
+#chartComparacion {
+    min-height: 480px !important;
+    height: 480px !important;
+}
+
+#mapaCasas {
+    min-height: 480px !important;
+    height: 480px !important;
+}
+
+.iteration-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.stats-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    margin: 15px;
+    border-radius: 8px;
+}
+
+.stat-item {
+    background: white;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+/* Estilos para la información de clusters */
+.clusters-summary {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border: 1px solid #e9ecef;
+}
+
+.clusters-summary h4 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    font-size: 14px;
+    text-align: center;
+}
+
+.clusters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+}
+
+.hospitals-panel {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+    border: 1px solid #e9ecef;
+}
+
+.hospitals-panel h4 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+}
+
+.hospitals-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 8px 0;
+    max-height: 160px;
+    overflow: auto;
+}
+
+.hospitals-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: white;
+    margin-bottom: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    font-size: 13px;
+}
+
+.hospitals-actions { text-align: right; }
+
+.btn-sm { padding: 6px 10px; font-size: 12px; border-radius: 6px; }
+
+/* Sidebar layout */
+.sidebar {
+    padding: 16px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.06);
+    border: 1px solid #e9ecef;
+    max-height: calc(100vh - 160px);
+    overflow: auto;
+}
+
+@media (max-width: 1024px) {
+    .main-area {
+        grid-template-columns: 1fr;
+    }
+    .visualization {
+        grid-template-columns: 1fr;
+    }
+    .sidebar {
+        max-height: none;
+    }
+
+    /* En pantallas medianas/pequeñas colocar la gráfica y el panel en columna */
+    .result-with-sidebar {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cluster-item {
+    background: white;
+    padding: 8px;
+    border-radius: 6px;
+    border-left: 4px solid #3498db;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.cluster-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.cluster-number {
+    font-weight: 600;
+    font-size: 12px;
+    color: #2c3e50;
+}
+
+.cluster-count {
+    font-size: 11px;
+    color: #7f8c8d;
+    background: #ecf0f1;
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+.cluster-hospital {
+    font-size: 10px;
+    color: #e74c3c;
+    font-weight: 500;
+}
+
+@media (max-width: 1024px) {
+    .visualization {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+    
+    .chart-container {
+        /* On smaller screens allow chart containers to size to content
+           but keep a reasonable min-height for readability. */
+        height: auto;
+        min-height: 420px;
+    }
+}
+
+@media (max-width: 768px) {
+    .controls {
+        grid-template-columns: 1fr;
+    }
+    
+    .control-row {
+        flex-direction: column;
+    }
+    
+    .clusters-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .chart-controls {
+        flex-direction: column;
+        gap: 8px;
+    }
+}

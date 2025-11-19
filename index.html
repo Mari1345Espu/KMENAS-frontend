@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏠 Sistema de Ubicación Óptima de Hospitales - K-Means</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 Sistema de Ubicación Óptima de Hospitales</h1>
+            <p>Algoritmo K-Means - Ubicación estratégica de hospitales basada en clusters de casas</p>
+        </div>
+
+        <!-- Controles Principales -->
+        <div class="controls">
+            <div class="control-group">
+                <label for="anchoEspacio">Ancho del Espacio (m):</label>
+                <input type="number" id="anchoEspacio" value="100" min="50" max="500">
+                <small>Ancho del área en unidades</small>
+            </div>
+            
+            <div class="control-group">
+                <label for="altoEspacio">Alto del Espacio (n):</label>
+                <input type="number" id="altoEspacio" value="100" min="50" max="500">
+                <small>Alto del área en unidades</small>
+            </div>
+            
+            <div class="control-group">
+                <label for="nCasas">Número de Casas:</label>
+                <input type="number" id="nCasas" value="80" min="10" max="300">
+                <button onclick="app.generarCasas()" class="btn btn-primary">
+                    🏠 Generar Casas
+                </button>
+            </div>
+            
+            <div class="control-group">
+                <label for="kHospitales">Número de Hospitales (k):</label>
+                <input type="number" id="kHospitales" value="3" min="1" max="15">
+                <button onclick="app.calcularHospitales()" class="btn btn-success">
+                    🏥 Calcular Ubicaciones
+                </button>
+            </div>
+            
+            <div class="control-group">
+                <label>Análisis Avanzado:</label>
+                <button onclick="app.analizarKOptimo()" class="btn btn-info">
+                    📊 Analizar K Óptimo
+                </button>
+            </div>
+        </div>
+
+        <!-- Panel de Estadísticas -->
+        <div class="stats-panel" id="statsPanel" style="display: none;">
+            <div class="stat-item">
+                <div class="stat-value" id="statAncho">100</div>
+                <div class="stat-label">Ancho (m)</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="statAlto">100</div>
+                <div class="stat-label">Alto (n)</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="statCasas">0</div>
+                <div class="stat-label">Total Casas</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="statHospitales">0</div>
+                <div class="stat-label">Hospitales (k)</div>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Procesando algoritmo K-Means...</p>
+        </div>
+
+        <!-- Área principal: visualizaciones + barra lateral -->
+        <div class="main-area">
+
+            <!-- Visualización Principal (charts apilados) -->
+            <div class="visualization">
+            <div class="chart-container">
+                <h3>🗺️ Mapa de Casas</h3>
+                <div class="chart-wrapper">
+                    <canvas id="mapaCasas"></canvas>
+                </div>
+                <div class="chart-controls">
+                    <div class="slider-control">
+                        <label for="tamañoPuntosCasas">Tamaño Casas:</label>
+                        <input type="range" id="tamañoPuntosCasas" min="2" max="10" value="5" step="1">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <h3>🏥 Resultado K-Means - Clusters</h3>
+                <div class="result-with-sidebar">
+                    <div class="chart-area">
+                        <div class="chart-wrapper">
+                            <canvas id="mapaResultado"></canvas>
+                        </div>
+                        <div class="chart-controls">
+                            <div class="slider-control">
+                                <label for="tamañoPuntosClusters">Tamaño Casas:</label>
+                                <input type="range" id="tamañoPuntosClusters" min="2" max="10" value="5" step="1">
+                            </div>
+                            <div class="slider-control">
+                                <label for="tamañoHospitales">Tamaño Hospitales:</label>
+                                <input type="range" id="tamañoHospitales" min="8" max="20" value="12" step="1">
+                            </div>
+                        </div>
+                        <div class="iteration-controls">
+                            <button onclick="app.iteracionAnterior()" class="btn btn-primary">← Anterior</button>
+                            <span id="iteracionActual">Iteración: 0</span>
+                            <button onclick="app.iteracionSiguiente()" class="btn btn-primary">Siguiente →</button>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar para hospitales (lista, centrar, acciones) colocada junto a la gráfica de resultado -->
+                    <aside class="sidebar" id="sidebarHospitals" aria-label="Panel de hospitales">
+                        <!-- El contenido se genera dinámicamente -->
+                    </aside>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <!-- Métricas de Calidad -->
+        <div class="metrics" id="metricsSection" style="display: none;">
+            <h3>📈 Métricas de Calidad del Clustering</h3>
+            <div class="metrics-grid" id="metricsGrid">
+                <!-- Las métricas se llenarán dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Evaluación de Calidad -->
+        <div class="quality-assessment" id="qualityAssessment" style="display: none;">
+            <h3>🎯 Evaluación de Calidad - k Elegido vs k Óptimo</h3>
+            <div class="assessment-card">
+                <div class="assessment-header">
+                    <h4 id="assessmentTitle">Evaluando calidad del clustering...</h4>
+                    <div class="score-badge" id="scoreBadge">0/8</div>
+                </div>
+                <div class="assessment-details" id="assessmentDetails">
+                    <!-- Detalles se llenarán dinámicamente -->
+                </div>
+                <div class="recommendation" id="assessmentRecommendation">
+                    <!-- Recomendación se llenará dinámicamente -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico de Comparación de K -->
+        <div class="comparison-chart" id="comparisonSection" style="display: none;">
+            <h3>📊 Análisis de K Óptimo - Método del Codo</h3>
+            <div class="chart-wrapper">
+                <canvas id="chartComparacion"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
