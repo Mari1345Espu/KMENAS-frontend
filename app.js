@@ -1,7 +1,7 @@
 // Aplicación principal K-Means
 const app = {
     // Configuración
-    API_URL: '/api',
+    API_URL: 'https://kmenas-backend.onrender.com',
     
     // Estado de la aplicación
     estado: {
